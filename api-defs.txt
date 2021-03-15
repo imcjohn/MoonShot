@@ -19,6 +19,8 @@ Meta-api calls (user functionality etc):
         return team with highest CASH net worth (only useful call after liquidate has been run)
 
 In-game api calls:
+    GET /api/ticker?symbol=<SYMB>
+        return current price for symbol SYMB
     GET /api/buy?symbol=<SYMB>&qty=<QTY>&password=<PASS>
         returns OK if buy is successful (account has enough cash etc), otherwise BAD
     GET /api/sell?symbol=<SYMB>&qty=<QTY>&password=<PASS>
