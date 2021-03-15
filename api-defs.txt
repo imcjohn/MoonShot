@@ -1,0 +1,32 @@
+User identification:
+    - no cookies
+    - no account update/create funcitonality
+    - accounts are identified by an alphanumeric password, we will pregen a bunch of accounts/team names at the start
+    - feel free to pick an arbitrary way to pregen the accounts, just make sure we have enough and a list of em somewhere
+
+Meta-api calls (user functionality etc):
+    GET /api/name?password=<PASS>
+        return team name for password <PASS>
+    GET /api/time
+        return current datetime in YYYY-MM-DDTHH:MM:SS format (in-game time)
+    GET /api/start
+        set game time to 2021-01-01T00:00:00, and start progressing at a pace of 1/(3600/2,678,400) real time, thus
+        all of january will complete in exactly 60 minutes. Also sets every account to have no symbols, and $1,000,000
+        in cash
+    GET /api/freeze
+        halt all trading, liquidate all team's stocks into cash
+    GET /api/winner
+        return team with highest CASH net worth (only useful call after liquidate has been run)
+
+In-game api calls:
+    GET /api/buy?symbol=<SYMB>&qty=<QTY>&password=<PASS>
+        returns OK if buy is successful (account has enough cash etc), otherwise BAD
+    GET /api/sell?symbol=<SYMB>&qty=<QTY>&password=<PASS>
+        returns OK if sell is successful (account has enough shares), otherwise BAD
+    GET /api/info?password=<PASS>
+        returns nested json dict of symbol: current price/qty
+        ex. (for an account that holds tesla and google)
+        {
+            'TSLA' : {'price' : 306.51,  'qty' : 150 },
+            'GOOG' : {'price' : 2061.92, 'qty' : 15  }
+        }
