@@ -1,0 +1,18 @@
+Single Page App:
+    - Registration link contains &password=<PASS> at the end, stored in local storage after that
+    - Stored locally for all api calls after that
+
+Simple overviews:
+    - Available cash
+    - Net worth
+    - Team Name
+    - Current date/time (ingame)
+
+Overview pane one:
+    - stock info
+    - stock buy
+    - stock sell
+
+Overview pane two:
+    - current holdings table (stock, shares)
+
