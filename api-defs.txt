@@ -27,8 +27,10 @@ In-game api calls:
         returns OK if sell is successful (account has enough shares), otherwise BAD
     GET /api/info?password=<PASS>
         returns nested json dict of symbol: current price/qty
+        also includes special symbol 'USD' to indicate current cash holdings
         ex. (for an account that holds tesla and google)
         {
             'TSLA' : {'price' : 306.51,  'qty' : 150 },
-            'GOOG' : {'price' : 2061.92, 'qty' : 15  }
+            'GOOG' : {'price' : 2061.92, 'qty' : 15  },
+            'USD'  : {'price' : 1,       'qty' : 99  }
         }

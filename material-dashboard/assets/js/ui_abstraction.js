@@ -61,6 +61,9 @@ function log_in(){
 function onload(){
     // handle login
     log_in();
+    api_populate(populate_tickers);
+    set_team_name();
+    ui_date();
 
     // handle update times
     let d = function(x){return (x.toString().length < 2)? '0' + x : x};
@@ -72,8 +75,9 @@ function onload(){
 
 function update_price(){
     let stock = document.getElementById('info_stock').value;
-    let price = api_get_price(stock);
-    document.getElementById('price_info').innerHTML = `Stock Price ($): ${price}`;
+    api_get_price(stock).then(function(price){
+        document.getElementById('price_info').innerHTML = `Stock Price ($): ${price}`;
+    });
 }
 
 function sell_shares(){
@@ -86,4 +90,28 @@ function buy_shares(){
     let stock = document.getElementById('stock_buy').value;
     let qty = document.getElementById('buy_qty').value;
     return api_execute(stock, qty, 'BUY');
+}
+
+function set_team_name(){
+    // this is an api call, but its so simple i'm gonna do bad practices and just put it here
+    return     fetch(`api/name?password=${pass}`)
+        .then(response => response.text()).then(
+            function(n){
+                document.getElementById('team_name').innerText = n;
+            }
+        );
+}
+
+let global_date;
+function date_update(){
+    global_date = new Date(global_date.getTime() + 1000 * 744); // magic numbers to track server date speed
+    document.getElementById('date').innerText = global_date.toUTCString();
+}
+
+function ui_date(){
+    // handle internal date pulling/updating
+    api_datetime().then(function(date){
+        global_date = new Date(date);
+        setInterval(date_update, 1000);
+    })
 }
