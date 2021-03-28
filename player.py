@@ -36,3 +36,8 @@ class ConcurrentPlayer:
             nominal = mkt.price_for_date(self.time(), symbol) * qty
             self.balance += nominal
         return True
+
+    def liquidate(self):
+        for symbol in self.shares:
+            if self.shares[symbol] > 0:
+                self.sell_shares(symbol, self.shares[symbol])
