@@ -5,7 +5,7 @@ import time
 import uuid
 import datetime
 from player import ConcurrentPlayer
-
+from market_data import MarketDataAggregator
 
 class Game:
     def __init__(self, player_count, game_start=1609459200, game_duration=3600, speed=744):
@@ -14,12 +14,14 @@ class Game:
         self.players_by_username = {}
         self.players_by_password = {}
         self.player_end_balances = {} # calculated by liquidate
+        self.players_ranking     = [] # calculated by liquidate [0] is winner
         self.start_time = None
         self.end_time = None
         self.duration = game_duration
         self.speed = speed
         self.game_start = game_start
         self.game_started = False
+        self.mkt = MarketDataAggregator()
 
     def get_game_time(self):
         delta = time.time() - self.start_time
@@ -36,7 +38,7 @@ class Game:
         for i in range(0,self.player_count):
             team_name = 'MoonShot'+str(i)
             team_pass = uuid.uuid4()[0:9]
-            player = ConcurrentPlayer(password=team_pass, name=team_name, current_time=time_func)
+            player = ConcurrentPlayer(password=team_pass, name=team_name, current_time=time_func, mkt=self.mkt)
             self.players_by_password[team_pass] = player
             self.players_by_username[team_name] = player
             self.players.append(player)
@@ -54,4 +56,19 @@ class Game:
         for player in self.players:
             player.liquidate()
             self.player_end_balances[player.name] = player.balance
+        self.players_ranking = sorted(self.players, key=lambda x: self.player_end_balances[x.name])
 
+    def api_winner(self):
+        return self.players_ranking[0].name
+
+    def api_ticker(self, symbol):
+        return self.mkt.price_for_date(self.get_game_time(), symbol)
+
+    def api_buy(self, password, symbol, qty):
+        return self.players_by_password[password].buy_shares(symbol, qty)
+
+    def api_sell(self, password, symbol, qty):
+        return self.players_by_password[password].sell_shares(symbol, qty)
+
+    def api_info(self, password):
+        return self.players_by_password[password].json_holdings()
