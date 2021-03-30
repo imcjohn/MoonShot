@@ -7,8 +7,9 @@ import datetime
 from player import ConcurrentPlayer
 from market_data import MarketDataAggregator
 
+
 class Game:
-    def __init__(self, player_count, game_start=1609459200, game_duration=3600, speed=744):
+    def __init__(self, player_count=100, game_start=1609477200, game_duration=3600, speed=744):
         self.player_count = player_count
         self.players = []
         self.players_by_username = {}
@@ -37,7 +38,7 @@ class Game:
         # gen players
         for i in range(0,self.player_count):
             team_name = 'MoonShot'+str(i)
-            team_pass = uuid.uuid4()[0:9]
+            team_pass = str(uuid.uuid4())[0:9]
             player = ConcurrentPlayer(password=team_pass, name=team_name, current_time=time_func, mkt=self.mkt)
             self.players_by_password[team_pass] = player
             self.players_by_username[team_name] = player
