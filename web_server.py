@@ -1,5 +1,7 @@
 import falcon
 from game import Game
+import os
+
 
 class GameResource(object):
     def __init__(self):
@@ -53,7 +55,7 @@ class GameResource(object):
         print('Got Request: ', api_call, ' with params ', req.params)
         if api_call in self.lookup_table:
             result = self.lookup_table[api_call](req.params)
-            resp.body = result
+            resp.body = str(result)
         else:
             resp.status = falcon.HTTP_404
             resp.body = "not found"
@@ -61,4 +63,6 @@ class GameResource(object):
 
 app = falcon.API()
 things = GameResource()
+dir = os.path.dirname(os.path.abspath(__file__))
+app.add_static_route('/', dir+'/material-dashboard')
 app.add_route('/api/{api_call}', things)

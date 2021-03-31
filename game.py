@@ -9,7 +9,8 @@ from market_data import MarketDataAggregator
 
 
 class Game:
-    def __init__(self, player_count=100, game_start=1609477200, game_duration=3600, speed=744):
+    def __init__(self, player_count=100, game_start=1609477200, game_duration=3600,
+                 speed=744, player_file='players.csv'):
         self.player_count = player_count
         self.players = []
         self.players_by_username = {}
@@ -23,6 +24,14 @@ class Game:
         self.game_start = game_start
         self.game_started = False
         self.mkt = MarketDataAggregator()
+        self.player_file = player_file
+
+    def dump_player_file(self):
+        f = open(self.player_file, 'w')
+        f.write('Player Name,Player Password\n')
+        for player in self.players:
+            f.write('%s,%s\n' % (player.name, player.password))
+        f.close()
 
     def get_game_time(self):
         delta = time.time() - self.start_time
@@ -37,12 +46,14 @@ class Game:
 
         # gen players
         for i in range(0,self.player_count):
-            team_name = 'MoonShot'+str(i)
+            team_name = 'Stocks'+str(i)
             team_pass = str(uuid.uuid4())[0:9]
             player = ConcurrentPlayer(password=team_pass, name=team_name, current_time=time_func, mkt=self.mkt)
             self.players_by_password[team_pass] = player
             self.players_by_username[team_name] = player
             self.players.append(player)
+        print(self.players_by_password)
+        self.dump_player_file()
 
     def api_name(self, passwd): # used for /api/name
         return self.players_by_password[passwd].name
@@ -57,18 +68,22 @@ class Game:
         for player in self.players:
             player.liquidate()
             self.player_end_balances[player.name] = player.balance
+        print('End balances', self.player_end_balances)
         self.players_ranking = sorted(self.players, key=lambda x: self.player_end_balances[x.name])
 
     def api_winner(self):
-        return self.players_ranking[0].name
+        if self.game_started: return 'Please freeze game first! (/api/freeze)'
+        return self.players_ranking[-1].name
 
     def api_ticker(self, symbol):
         return self.mkt.price_for_date(self.get_game_time(), symbol)
 
     def api_buy(self, password, symbol, qty):
+        if not self.game_started: return False
         return self.players_by_password[password].buy_shares(symbol, qty)
 
     def api_sell(self, password, symbol, qty):
+        if not self.game_started: return False
         return self.players_by_password[password].sell_shares(symbol, qty)
 
     def api_info(self, password):

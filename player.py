@@ -18,16 +18,18 @@ class ConcurrentPlayer:
         self.market = mkt
 
     def buy_shares(self, symbol, qty):
+        qty = int(qty)
         price = self.market.price_for_date(self.time(), symbol)
         with self.trade_lock:
             nominal = price * int(qty)
             if nominal > self.balance:
                 return False
             self.balance -= nominal
-            self.shares[price] = int(self.shares.get(price, 0) + qty)
+            self.shares[symbol] = int(self.shares.get(price, 0) + qty)
         return True
 
     def sell_shares(self, symbol, qty):
+        qty = int(qty)
         with self.trade_lock:
             if self.shares[symbol] < qty:
                 return False
@@ -43,9 +45,9 @@ class ConcurrentPlayer:
 
     def json_holdings(self):
         # returns holdings in the format in api-defs.txt
-        holdings = {}
+        holdings = {'USD': {'qty': self.balance}}
         with self.trade_lock:  # ew slow
-            for ticker in self.shares:
+            for ticker in self.shares.keys():
                 holdings[ticker] = {'price': self.market.price_for_date(self.time(), ticker),
                                     'qty': self.shares[ticker]}
         return json.dumps(holdings)

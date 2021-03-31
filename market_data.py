@@ -51,11 +51,12 @@ class MarketDataAggregator:
         Memoized get_price function to save on api calls
         """
         date = '%s-%s-%s' % (day.year, two_dig(day.month), two_dig(day.day))
-        if date in self.memo:
-            return self.memo[date]
+        key = ticker + date
+        if key in self.memo:
+            return self.memo[key]
         else:
             v = get_price(date, ticker)
-            self.memo[date] = v
+            self.memo[key] = v
             return v
 
     def price_for_date(self, unix, ticker):
