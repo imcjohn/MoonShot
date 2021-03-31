@@ -4,6 +4,7 @@
  */
 
 const PASS_KEY = 'lspass';
+const SERVER_RESOLUTION = 744; // 744 for hour -> month, 1 for hour -> hour
 var pass = 'undef';
 console.log('ui abstraction started...');
 
@@ -104,7 +105,7 @@ function set_team_name(){
 
 let global_date;
 function date_update(){
-    global_date = new Date(global_date.getTime() + 1000 * 744); // magic numbers to track server date speed
+    global_date = new Date(global_date.getTime() + 1000 * SERVER_RESOLUTION); // magic numbers to track server date speed
     document.getElementById('date').innerText = global_date.toUTCString();
 }
 
