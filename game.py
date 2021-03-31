@@ -1,6 +1,7 @@
 """
 Bigger game class
 """
+import os
 import time
 import uuid
 import datetime
@@ -10,7 +11,7 @@ from market_data import MarketDataAggregator
 
 class Game:
     def __init__(self, player_count=100, game_start=1609477200, game_duration=3600,
-                 speed=744, player_file='players.csv'):
+                 speed=744, player_file='players.csv', link_header='http://zp-tothemoon.money/dashboard.html?pass='):
         self.player_count = player_count
         self.players = []
         self.players_by_username = {}
@@ -25,12 +26,13 @@ class Game:
         self.game_started = False
         self.mkt = MarketDataAggregator()
         self.player_file = player_file
+        self.link_header = link_header
 
     def dump_player_file(self):
         f = open(self.player_file, 'w')
-        f.write('Player Name,Player Password\n')
+        f.write('Player Name,Player Password,Account Link\n')
         for player in self.players:
-            f.write('%s,%s\n' % (player.name, player.password))
+            f.write('%s,%s,%s\n' % (player.name, player.password, self.link_header+player.password))
         f.close()
 
     def get_game_time(self):
@@ -44,10 +46,23 @@ class Game:
         self.end_time = self.start_time + self.duration/self.speed
         time_func = lambda: self.get_game_time()
 
+        players = []
+        if os.path.exists(self.player_file):
+            op = open(self.player_file)
+            for line in op:
+                line = line.strip('\n')
+                nm, pw, *rest = line.split(',')
+                players.append((nm, pw))
+
         # gen players
         for i in range(0,self.player_count):
-            team_name = 'Stocks'+str(i)
-            team_pass = str(uuid.uuid4())[0:9]
+            if len(players) == 0:
+                team_name = 'Stocks'+str(i)
+                team_pass = str(uuid.uuid4())[0:9]
+            else:  # use existing accounts if possible (to not burn old links)
+                team_name, team_pass = players[-1]
+                print('reusing', team_name, team_pass)
+                del players[-1]
             player = ConcurrentPlayer(password=team_pass, name=team_name, current_time=time_func, mkt=self.mkt)
             self.players_by_password[team_pass] = player
             self.players_by_username[team_name] = player
