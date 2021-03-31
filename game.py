@@ -11,7 +11,7 @@ from market_data import MarketDataAggregator
 
 class Game:
     def __init__(self, player_count=100, game_start=1609477200, game_duration=3600,
-                 speed=744, player_file='players.csv', link_header='http://zp-tothemoon.money/dashboard.html?pass='):
+                 speed=744, player_file='players.csv', link_header='http://zp-tothemoon.money/index.html?pass='):
         self.player_count = player_count
         self.players = []
         self.players_by_username = {}
