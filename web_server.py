@@ -61,9 +61,11 @@ class GameResource(object):
             resp.status = falcon.HTTP_404
             resp.body = "not found"
 
+
 class RedirectorComponent(object):
     def on_get(self, req, resp):
         raise falcon.HTTPMovedPermanently('/index.html')
+
 
 app = falcon.API()
 things = GameResource()
