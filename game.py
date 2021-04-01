@@ -61,13 +61,11 @@ class Game:
                 team_pass = str(uuid.uuid4())[0:9]
             else:  # use existing accounts if possible (to not burn old links)
                 team_name, team_pass = players[-1]
-                print('reusing', team_name, team_pass)
                 del players[-1]
             player = ConcurrentPlayer(password=team_pass, name=team_name, current_time=time_func, mkt=self.mkt)
             self.players_by_password[team_pass] = player
             self.players_by_username[team_name] = player
             self.players.append(player)
-        print(self.players_by_password)
         self.dump_player_file()
 
     def api_name(self, passwd): # used for /api/name

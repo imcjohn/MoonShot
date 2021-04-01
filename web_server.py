@@ -1,7 +1,8 @@
 import falcon
 from game import Game
 import os
-
+import logging
+logging.basicConfig(level=logging.INFO)
 
 class GameResource(object):
     def __init__(self):
@@ -52,7 +53,7 @@ class GameResource(object):
     def on_get(self, req, resp, api_call):
         """Handles GET requests"""
         resp.status = falcon.HTTP_200  # This is the default status
-        print('Got Request: ', api_call, ' with params ', req.params)
+        logging.debug('Got Request: ', api_call, ' with params ', req.params)
         if api_call in self.lookup_table:
             result = self.lookup_table[api_call](req.params)
             resp.body = str(result)
