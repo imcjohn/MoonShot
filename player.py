@@ -25,7 +25,7 @@ class ConcurrentPlayer:
             if nominal > self.balance:
                 return False
             self.balance -= nominal
-            self.shares[symbol] = int(self.shares.get(price, 0) + qty)
+            self.shares[symbol] = int(self.shares.get(symbol, 0) + qty)
         return True
 
     def sell_shares(self, symbol, qty):
