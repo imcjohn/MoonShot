@@ -6,12 +6,13 @@
 /**
  * Get price for stock on server
  * @param stock stock to get price for
+ * @param dry if true don't fail ever
  * @returns promise to the price of the stock
  */
-function api_get_price(stock){
+function api_get_price(stock, dry){
     if (!SYMBOLS.includes(stock)){
-        alert('Please pick a valid stock symbol');
-        return api_get_price('MSFT');
+        if (!dry) alert('Please pick a valid stock symbol');
+        return new Promise((resolve, reject) => resolve(0));
     }
 
     return     fetch(`api/ticker?symbol=${stock}`)

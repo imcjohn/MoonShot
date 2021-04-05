@@ -93,6 +93,20 @@ function buy_shares(){
     return api_execute(stock, qty, 'BUY');
 }
 
+let debounce = Date.now();
+function update_cost(){
+    if (Date.now() - debounce < 3000) return; // lil debouncing action
+    debounce = Date.now();
+    let stock = document.getElementById('stock_buy').value;
+    let qty = document.getElementById('buy_qty').value;
+    api_get_price(stock, true).then(
+        function(x){
+            let nominal = Number(x) * qty;
+            document.getElementById('tcost_buy').innerText='$' + nominal;
+        }
+    )
+}
+
 function set_team_name(){
     // this is an api call, but its so simple i'm gonna do bad practices and just put it here
     return     fetch(`api/name?password=${pass}`)

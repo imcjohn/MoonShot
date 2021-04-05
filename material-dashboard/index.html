@@ -239,7 +239,15 @@ The above copyright notice and this permission notice shall be included in all c
                               <div class="col-md-12">
                                 <div class="form-group">
                                   <label class="bmd-label-floating">Quantity</label>
-                                  <input type="text" class="form-control" id="buy_qty">
+                                  <input onChange="update_cost()" type="text" class="form-control" id="buy_qty">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-12">
+                                <div class="form-group">
+                                  <label class="bmd-label-floating" id="tcost_buy">Transaction Cost</label>
+                                  <input disabled type="text" class="form-control">
                                 </div>
                               </div>
                             </div>
