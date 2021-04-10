@@ -1,0 +1,17 @@
+#########################
+# Moonshot example conf
+# by Ian McJohn
+#########################
+
+# player_count is the number of users (And invite links) the software should generate
+player_count: 100
+# game_start is the unix timestamp of when the simulated game period should start
+game_start: 1609477200
+# game_duration is how long the game should last for (in real time seconds)
+game_duration: 3600
+# speed is the mapping of game seconds to real seconds (ex a speed of 2 means the game is twice as fast as real)
+speed: 744
+# player file is where to output (or restore) user links from
+player_file: 'moonshot-players.csv'
+# link header is the header of the URL to generate links for
+link_header: 'http://zp-tothemoon.money/index.html?pass='

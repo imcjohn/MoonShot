@@ -1,5 +1,13 @@
 """
 Bigger game class
+
+Config params:
+player_count - int
+game_start - int
+game_duration - int
+speed - int
+player_file - string
+link_header - string
 """
 import os
 import time
@@ -10,9 +18,8 @@ from market_data import MarketDataAggregator
 
 
 class Game:
-    def __init__(self, player_count=100, game_start=1609477200, game_duration=3600,
-                 speed=744, player_file='players.csv', link_header='http://zp-tothemoon.money/index.html?pass='):
-        self.player_count = player_count
+    def __init__(self, config_dict={}):
+        self.player_count = config_dict.get('player_count', 100)
         self.players = []
         self.players_by_username = {}
         self.players_by_password = {}
@@ -20,13 +27,13 @@ class Game:
         self.players_ranking     = [] # calculated by liquidate [0] is winner
         self.start_time = None
         self.end_time = None
-        self.duration = game_duration
-        self.speed = speed
-        self.game_start = game_start
+        self.duration = config_dict.get('game_duration', 3600)
+        self.speed = config_dict.get('speed', 1)
+        self.game_start = config_dict.get('game_start', 1609477200)
         self.game_started = False
         self.mkt = MarketDataAggregator()
-        self.player_file = player_file
-        self.link_header = link_header
+        self.player_file = config_dict.get('player_file', 'players.csv')
+        self.link_header = config_dict.get('link_header', 'http://nolink?pass=')
 
     def dump_player_file(self):
         f = open(self.player_file, 'w')

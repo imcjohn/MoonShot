@@ -1,12 +1,15 @@
 import falcon
 from game import Game
 import os
+import yaml
 import logging
-logging.basicConfig(level=logging.INFO)
+from time import time
+
 
 class GameResource(object):
-    def __init__(self):
-        self.game = Game()
+    def __init__(self, config_dict):
+        self.game = Game(config_dict)
+        self.conf = config_dict
         self.lookup_table = {
             'name': self.name,
             'time': self.time,
@@ -67,9 +70,14 @@ class RedirectorComponent(object):
         raise falcon.HTTPMovedPermanently('/index.html')
 
 
+# first load config
+with open('moonshot.yaml') as cf:
+    conf = yaml.load(cf)
+logging.basicConfig(level=logging.INFO, handlers=[logging.FileHandler('moonshot-%s.log' % str(int(time())))])
+# then start server
 app = falcon.API()
-things = GameResource()
-dir = os.path.dirname(os.path.abspath(__file__))
-app.add_static_route('/', dir+'/material-dashboard')
+things = GameResource(conf)
+dp = os.path.dirname(os.path.abspath(__file__))
+app.add_static_route('/', dp+'/material-dashboard')
 app.add_route('/api/{api_call}', things)
 app.add_route('/', RedirectorComponent())
