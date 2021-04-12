@@ -95,7 +95,7 @@ function buy_shares(){
 
 let debounce = Date.now();
 function update_cost(){
-    if (Date.now() - debounce < 3000) return; // lil debouncing action
+    if (Date.now() - debounce < 500) return; // lil debouncing action
     debounce = Date.now();
     let stock = document.getElementById('stock_buy').value;
     let qty = document.getElementById('buy_qty').value;
