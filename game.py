@@ -49,6 +49,7 @@ class Game:
         return self.game_start + delta * self.speed
 
     def api_start(self):  # used for /api/start
+        if self.game_started: return  # don't overwrite running game
         # init time/vars
         self.game_started = True
         self.start_time = time.time()
