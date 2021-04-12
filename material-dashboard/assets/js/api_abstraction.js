@@ -10,6 +10,7 @@
  * @returns promise to the price of the stock
  */
 function api_get_price(stock, dry){
+    stock = stock.toUpperCase();
     if (!SYMBOLS.includes(stock)){
         if (!dry) alert('Please pick a valid stock symbol');
         return new Promise((resolve, reject) => resolve(0));
