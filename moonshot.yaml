@@ -10,7 +10,7 @@ game_start: 1609477200
 # game_duration is how long the game should last for (in real time seconds)
 game_duration: 3600
 # speed is the mapping of game seconds to real seconds (ex a speed of 2 means the game is twice as fast as real)
-speed: 7440
+speed: 744
 # player file is where to output (or restore) user links from
 player_file: 'moonshot-players.csv'
 # link header is the header of the URL to generate links for
