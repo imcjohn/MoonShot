@@ -18,7 +18,9 @@ from market_data import MarketDataAggregator
 
 
 class Game:
-    def __init__(self, config_dict={}):
+    def __init__(self, config_dict=None):
+        if config_dict is None:
+            config_dict = {}
         self.player_count = config_dict.get('player_count', 100)
         self.players = []
         self.players_by_username = {}
@@ -31,7 +33,7 @@ class Game:
         self.speed = config_dict.get('speed', 1)
         self.game_start = config_dict.get('game_start', 1609477200)
         self.game_started = False
-        self.mkt = MarketDataAggregator()
+        self.mkt = MarketDataAggregator(config_dict)
         self.player_file = config_dict.get('player_file', 'players.csv')
         self.link_header = config_dict.get('link_header', 'http://nolink?pass=')
 

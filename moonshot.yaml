@@ -15,3 +15,5 @@ speed: 744
 player_file: 'moonshot-players.csv'
 # link header is the header of the URL to generate links for
 link_header: 'http://zp-tothemoon.money/index.html?pass='
+# api key for marketstack API (replace with your own)
+marketstack_api: '7d2735316b4962b1d174f41447fdbc16'

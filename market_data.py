@@ -1,24 +1,9 @@
 import datetime
 import json
 import requests
+from holidays import HolidayChecker
 
-params = {
-  'access_key': '7d2735316b4962b1d174f41447fdbc16'
-}
-# january-specific stuff
-WEEKENDS = [2,3,9,10,23,24,30,31]
-HOLIDAYS = [1,18]
-NON_TRADING_DAYS = WEEKENDS + HOLIDAYS
 two_dig = lambda x: '0' + str(x) if len(str(x)) == 1 else str(x)
-
-
-def make_non_holiday(d):
-    """
-    Makes day into a non-holiday
-    """
-    while d in NON_TRADING_DAYS:
-        d = (d + 1) % 31
-    return d
 
 
 def percent_thru_day(date):
@@ -43,8 +28,13 @@ def get_price(date, ticker):
 
 
 class MarketDataAggregator:
-    def __init__(self):
+    def __init__(self, config_dict):
         self.memo = {}
+        self.conf = config_dict
+        self.holiday = HolidayChecker()
+        self.params = {
+          'access_key': config_dict.get('marketstack_api', 'X')
+        }
 
     def gp_memo(self, day, ticker):
         """
@@ -67,8 +57,7 @@ class MarketDataAggregator:
         :return: price of stock at this time
         """
         dt_object = datetime.datetime.fromtimestamp(unix)
-        correct_day = make_non_holiday(dt_object.day)
-        date = dt_object.replace(day=correct_day)
+        date = self.holiday.make_trading_day(dt_object) # make sure to skip holidays etc
         open, close = self.gp_memo(date, ticker)
         pct = percent_thru_day(date)
         return round(wiggly_line(open, close, pct), 2)
