@@ -28,20 +28,21 @@ class ConcurrentPlayer:
             self.shares[symbol] = int(self.shares.get(symbol, 0) + qty)
         return True
 
-    def sell_shares(self, symbol, qty):
+    def sell_shares(self, symbol, qty, time=None):
         qty = int(qty)
         with self.trade_lock:
             if self.shares[symbol] < qty:
                 return False
             self.shares[symbol] = self.shares.get(symbol) - int(qty)
-            nominal = self.market.price_for_date(self.time(), symbol) * qty
+            if time is None: time = self.time()  # you can sell either at a fixed time or current game time
+            nominal = self.market.price_for_date(time, symbol) * qty
             self.balance += nominal
         return True
 
-    def liquidate(self):
+    def liquidate(self, liquidate_time):
         for symbol in self.shares:
             if self.shares[symbol] > 0:
-                self.sell_shares(symbol, self.shares[symbol])
+                self.sell_shares(symbol, self.shares[symbol], time=liquidate_time)
 
     def json_holdings(self):
         # returns holdings in the format in api-defs.txt
@@ -51,3 +52,12 @@ class ConcurrentPlayer:
                 holdings[ticker] = {'price': self.market.price_for_date(self.time(), ticker),
                                     'qty': self.shares[ticker]}
         return json.dumps(holdings)
+
+    def net_worth(self):
+        # returns current net worth
+        nw = 0
+        with self.trade_lock:
+            nw += self.balance
+            for ticker in self.shares.keys():
+                nw += self.market.price_for_date(self.time(), ticker) * self.shares[ticker]
+        return nw

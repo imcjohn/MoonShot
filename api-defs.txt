@@ -17,6 +17,8 @@ Meta-api calls (user functionality etc):
         halt all trading, liquidate all team's stocks into cash
     GET /api/winner
         return team with highest CASH net worth (only useful call after liquidate has been run)
+    GET /api/ranking
+        returns pretty-printed current ranking of teams (rough net worth)
 
 In-game api calls:
     GET /api/ticker?symbol=<SYMB>

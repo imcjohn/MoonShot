@@ -18,15 +18,6 @@ def wiggly_line(start, end, pct):
     return start + delta * pct
 
 
-def get_price(date, ticker):
-    url = 'http://api.marketstack.com/v1/tickers/%s/eod/%s' % (ticker, date)
-    api_result = requests.get(url, params)
-    data = api_result.json()
-    if 'open' in data and 'close' in data:
-        return data['open'], data['close']
-    return 9999, 9999  # (open, close)
-
-
 class MarketDataAggregator:
     def __init__(self, config_dict):
         self.memo = {}
@@ -35,6 +26,14 @@ class MarketDataAggregator:
         self.params = {
           'access_key': config_dict.get('marketstack_api', 'X')
         }
+
+    def get_price(self, date, ticker):
+        url = 'http://api.marketstack.com/v1/tickers/%s/eod/%s' % (ticker, date)
+        api_result = requests.get(url, self.params)
+        data = api_result.json()
+        if 'open' in data and 'close' in data:
+            return data['open'], data['close']
+        return 9999, 9999  # (open, close)
 
     def gp_memo(self, day, ticker):
         """
@@ -45,7 +44,7 @@ class MarketDataAggregator:
         if key in self.memo:
             return self.memo[key]
         else:
-            v = get_price(date, ticker)
+            v = self.get_price(date, ticker)
             self.memo[key] = v
             return v
 

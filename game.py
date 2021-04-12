@@ -52,7 +52,7 @@ class Game:
         # init time/vars
         self.game_started = True
         self.start_time = time.time()
-        self.end_time = self.start_time + self.duration/self.speed
+        self.end_time = self.start_time + self.duration
         time_func = lambda: self.get_game_time()
 
         players = []
@@ -88,7 +88,7 @@ class Game:
     def api_freeze(self): # used for /api/freeze
         self.game_started = False # only threadsafe because below liquidate calls are all protected by locks
         for player in self.players:
-            player.liquidate()
+            player.liquidate(self.game_start + self.duration * self.speed)
             self.player_end_balances[player.name] = player.balance
         print('End balances', self.player_end_balances)
         self.players_ranking = sorted(self.players, key=lambda x: self.player_end_balances[x.name])
@@ -101,12 +101,21 @@ class Game:
         return self.mkt.price_for_date(self.get_game_time(), symbol)
 
     def api_buy(self, password, symbol, qty):
-        if not self.game_started: return False
+        if not self.game_started or time.time() > self.end_time: return False
         return self.players_by_password[password].buy_shares(symbol, qty)
 
     def api_sell(self, password, symbol, qty):
-        if not self.game_started: return False
+        if not self.game_started or time.time() > self.end_time: return False
         return self.players_by_password[password].sell_shares(symbol, qty)
 
     def api_info(self, password):
         return self.players_by_password[password].json_holdings()
+
+    def current_ranking(self):
+        # return a rough ranking by net worth
+        players = [(p.name, p.net_worth()) for p in self.players]
+        ranked_p = sorted(players, reverse=True, key=lambda x: x[1])
+        out = '<h1>Player Ranking</h1><br>'
+        for i, p in enumerate(ranked_p):
+            out += '%d. %s (Net Worth: %s)<br>' % (i+1, p[0], str(p[1]))
+        return out
