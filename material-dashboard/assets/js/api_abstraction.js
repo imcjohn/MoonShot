@@ -73,8 +73,7 @@ function api_populate(cb){
  */
 function api_datetime(){
     return     fetch(`api/time`)
-        .then(response => response.text())
-        .then(response => new Date(response));
+        .then(response => response.text());
 }
 
 // all nasd symbols, save the server-side some checking

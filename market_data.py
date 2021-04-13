@@ -2,6 +2,7 @@ import datetime
 import json
 import requests
 from holidays import HolidayChecker
+from market_math import wiggly_line
 
 two_dig = lambda x: '0' + str(x) if len(str(x)) == 1 else str(x)
 
@@ -11,11 +12,6 @@ def percent_thru_day(date):
     second += date.minute * 60
     second += date.second
     return second / 86400.0
-
-
-def wiggly_line(start, end, pct):
-    delta = end - start # just flat line for now
-    return start + delta * pct
 
 
 class MarketDataAggregator:
@@ -59,4 +55,4 @@ class MarketDataAggregator:
         date = self.holiday.make_trading_day(dt_object) # make sure to skip holidays etc
         open, close = self.gp_memo(date, ticker)
         pct = percent_thru_day(date)
-        return round(wiggly_line(open, close, pct), 2)
+        return round(wiggly_line(ticker, date, open, close, pct), 2)

@@ -84,7 +84,7 @@ class Game:
     def api_time(self): # used for /api/time
         unix = self.get_game_time()
         dt_object = datetime.datetime.fromtimestamp(unix)
-        return dt_object.isoformat()
+        return str(self.speed) + ',' + dt_object.isoformat()
 
     def api_freeze(self): # used for /api/freeze
         self.game_started = False # only threadsafe because below liquidate calls are all protected by locks

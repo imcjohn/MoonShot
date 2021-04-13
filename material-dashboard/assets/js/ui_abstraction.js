@@ -4,7 +4,7 @@
  */
 
 const PASS_KEY = 'lspass';
-const SERVER_RESOLUTION = 744; // 744 for hour -> month, 1 for hour -> hour
+let SERVER_RESOLUTION = 744; // 744 for hour -> month, 1 for hour -> hour
 var pass = 'undef';
 console.log('ui abstraction started...');
 
@@ -125,7 +125,10 @@ function date_update(){
 
 function ui_date(){
     // handle internal date pulling/updating
-    api_datetime().then(function(date){
+    api_datetime().then(function(str){
+        let spl = str.split(','); // speed, date
+        let date = spl[1];
+        SERVER_RESOLUTION = spl[0];
         global_date = new Date(date);
         setInterval(date_update, 1000);
     })
