@@ -79,6 +79,7 @@ class Game:
         self.dump_player_file()
 
     def api_name(self, passwd): # used for /api/name
+        if not self.game_started: return 'Game Not Started Yet'
         return self.players_by_password[passwd].name
 
     def api_time(self): # used for /api/time
