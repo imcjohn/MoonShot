@@ -100,7 +100,8 @@ class Game:
         return self.players_ranking[-1].name
 
     def api_ticker(self, symbol):
-        return self.mkt.price_for_date(self.get_game_time(), symbol)
+        p = self.mkt.price_for_date(self.get_game_time(), symbol, pretty=True)
+        return p
 
     def api_buy(self, password, symbol, qty):
         if not self.game_started or time.time() > self.end_time: return False

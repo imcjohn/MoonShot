@@ -20,6 +20,7 @@ class ConcurrentPlayer:
     def buy_shares(self, symbol, qty):
         qty = int(qty)
         price = self.market.price_for_date(self.time(), symbol)
+        if price is None: return False
         with self.trade_lock:
             nominal = price * int(qty)
             if nominal > self.balance:
@@ -30,12 +31,14 @@ class ConcurrentPlayer:
 
     def sell_shares(self, symbol, qty, time=None):
         qty = int(qty)
+        if time is None: time = self.time()  # you can sell either at a fixed time or current game time
+        price = self.market.price_for_date(time, symbol)
+        if price is None: return False
         with self.trade_lock:
             if self.shares[symbol] < qty:
                 return False
+            nominal = price * qty
             self.shares[symbol] = self.shares.get(symbol) - int(qty)
-            if time is None: time = self.time()  # you can sell either at a fixed time or current game time
-            nominal = self.market.price_for_date(time, symbol) * qty
             self.balance += nominal
         return True
 
@@ -49,7 +52,7 @@ class ConcurrentPlayer:
         holdings = {'USD': {'qty': self.balance}}
         with self.trade_lock:  # ew slow
             for ticker in self.shares.keys():
-                holdings[ticker] = {'price': self.market.price_for_date(self.time(), ticker),
+                holdings[ticker] = {'price': self.market.price_for_date(self.time(), ticker, pretty=True),
                                     'qty': self.shares[ticker]}
         return json.dumps(holdings)
 
@@ -59,5 +62,5 @@ class ConcurrentPlayer:
         with self.trade_lock:
             nw += self.balance
             for ticker in self.shares.keys():
-                nw += self.market.price_for_date(self.time(), ticker) * self.shares[ticker]
+                nw += self.market.price_for_date(self.time(), ticker, pretty=True) * self.shares[ticker]
         return nw
