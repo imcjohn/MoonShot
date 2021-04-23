@@ -2,7 +2,6 @@
 More complicated stock motion plotting, courtesy of @skmendez
 """
 import numpy as np
-import matplotlib.pyplot as plt
 from typing import *
 from collections import namedtuple
 

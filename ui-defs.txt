@@ -1,3 +1,5 @@
+My internal notes on how I designed the UI
+
 Single Page App:
     - Registration link contains &password=<PASS> at the end, stored in local storage after that
     - Stored locally for all api calls after that
